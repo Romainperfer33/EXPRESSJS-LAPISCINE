@@ -6,6 +6,7 @@ const morgan = require('morgan');
 const servFavicon = require('serve-favicon');
 
 
+
 // const logger = (req,res,next) => {
 //   console.log(`URL : ${req.url}`)
 //   next();
@@ -14,6 +15,7 @@ const servFavicon = require('serve-favicon');
 app
   .use(morgan('dev'))
   .use(servFavicon(__dirname + '/favicon.ico'))
+  .use(express.json())
 
 
 app.get('/api/coworkings', (req, res) => {
@@ -32,12 +34,18 @@ app.get('/api/coworking/:id', (req, res) => {
       result = { message: msg, data: myCoworking }
 
     } else {
-      const msg = `Aucun Coworking ne correspond à l'identifiant ${rep.params.id}`
+      const msg = `Aucun Coworking ne correspond à l'identifiant ${req.params.id}`
       result = { message: msg, data:{}}
     }
   
     res.send({result})
   })
+
+  app.post('/api/coworkings', (req, res) => {
+  let newCoworking = req.body;
+  coworkings.push(newCoworking);
+  res.json(coworkings)
+})
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
