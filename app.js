@@ -43,8 +43,13 @@ app.get('/api/coworking/:id', (req, res) => {
 
   app.post('/api/coworkings', (req, res) => {
   let newCoworking = req.body;
+  let newId = coworkings [coworkings.length - 1].id +1;
+
+  newCoworking.id = newId;
   coworkings.push(newCoworking);
-  res.json(coworkings)
+
+  const msg = 'un coworking a bien ete ajouté'
+  res.json({message: msg, data: newCoworking})
 })
 
 app.listen(port, () => {
