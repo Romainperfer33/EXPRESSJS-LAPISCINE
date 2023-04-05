@@ -1,9 +1,10 @@
 const express = require('express')
 const app = express()
 const port = 3000
-const coworkings = require('./mock_coworking');
+let coworkings = require('./mock_coworking');
 const morgan = require('morgan');
 const servFavicon = require('serve-favicon');
+const e = require('express');
 
 
 
@@ -51,6 +52,35 @@ app.get('/api/coworking/:id', (req, res) => {
   const msg = 'un coworking a bien ete ajouté'
   res.json({message: msg, data: newCoworking})
 })
+
+  app.put('/api/coworkings/:id', (req,res)=> {
+    let coworkingToModofy = coworkings.find(coworking => coworking.id == req.params.id)
+    if (!coworkingToModofy) {
+      const msg = `Le coworking n°${req.params.id} n'existe pas.`
+      return res.status(404).json({message:msg})
+    }
+    coworkingToModofy = {...coworkingToModofy, ...req.body}
+    let index = coworkings.findIndex((coworking)=>coworking.id == coworkingToModofy.id);
+    coworkings[index]=coworkingToModofy;
+    res.json(coworkings)
+  })
+
+  app.delete('api/coworkings/:id', (req,res)=>{
+    let coworkingToDelete = coworkings.findIndex(el => el.id == req.params.id)
+    if (!coworkingToDelete) {
+      const msg = `Le coworking n°${req.params.id}est supprimé.`
+      return res.status(404).json({message:msg})
+    }
+    let coworkingsUpdated = []
+    coworkings.forEach((el)=>{
+      if(el.id != coworkingToDelete.id) {
+        coworkingsUpdated.push(el)
+      }
+
+    })
+    coworkings = coworkingsUpdated;
+    res.json(coworkings)
+  })
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
