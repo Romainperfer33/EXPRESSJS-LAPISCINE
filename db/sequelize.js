@@ -1,6 +1,8 @@
+const bcrypt = require('bcrypt');
 const { Sequelize, DataTypes } = require('sequelize');
 const CoworkingModelSequelize = require('../models/coworking')
-const coworkings = require('../mock-coworking');
+const UserModelSequelize = require('../models/user')
+const coworkings = require('../mock-coworkings');
 
 const sequelize = new Sequelize('lapiscine_coworking', 'root', '', {
     host: 'localhost',
@@ -9,6 +11,7 @@ const sequelize = new Sequelize('lapiscine_coworking', 'root', '', {
 });
 
 const CoworkingModel = CoworkingModelSequelize(sequelize, DataTypes)
+const UserModel = UserModelSequelize(sequelize, DataTypes)
 
 const initDb = () => {
     return sequelize.sync({ force: true }) 
@@ -24,6 +27,24 @@ const initDb = () => {
                 capacity: element.capacity,
             })
         })
+
+        bcrypt.hash('mdp', 10)
+            .then((hash) => {
+                UserModel.create({
+                    username: 'paul',
+                    password: hash
+                })
+            })
+            .catch(err => console.log(err))
+
+        bcrypt.hash('mdp', 10)
+        .then((hash) => {
+            UserModel.create({
+                username: 'pierre',
+                password: hash
+            })
+        })
+        .catch(err => console.log(err))    
     })
     .catch(error => console.log('Erreur'))
 }
