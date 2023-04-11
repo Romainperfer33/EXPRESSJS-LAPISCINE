@@ -18,6 +18,7 @@ const coworkings = [
         superficy: 95,
         capacity: 45,
         created: new Date()
+        
     },
     {
         id: 12,
