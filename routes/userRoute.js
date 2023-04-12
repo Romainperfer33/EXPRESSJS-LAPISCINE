@@ -7,14 +7,10 @@ router
     .get(coworkingController.findAllCoworkings)
     .post(coworkingController.createCoworking)
 
-router
-    .route('/:id')
-    .get(coworkingController.findCoworkingByPk)
-    .put(coworkingController.updateCoworking)
-    .delete(coworkingController.deleteCoworking)
-
-router
-    .route('/')
-    .get(coworkingController.findAllCoworkings)
+// router
+//     .route('/:id')
+//     .get(coworkingController.findCoworkingByPk)
+//     .put(coworkingController.updateCoworking)
+//     .delete(coworkingController.deleteCoworking)
 
 module.exports = router;

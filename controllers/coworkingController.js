@@ -68,7 +68,7 @@ exports.updateCoworking = (req, res) => {
             return res.status(400).json({message: error.message, data: error})
         } 
         const msg = "Impossible de mettre à jour le coworking."
-        res.json({message: msg})
+        res.status(500).json({message: msg})
     })
 }
 
