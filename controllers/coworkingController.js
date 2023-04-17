@@ -1,6 +1,6 @@
 let coworkings = require('../mock-coworkings');
-const { Op, UniqueConstraintError, ValidationError } = require('sequelize');
-const { CoworkingModel } = require('../db/sequelize')
+const { Op, UniqueConstraintError, ValidationError, QueryTypes } = require('sequelize');
+const { CoworkingModel, ReviewModel, sequelize } = require('../db/sequelize')
 
 
 exports.findAllCoworkings = (req, res) => {
@@ -33,7 +33,9 @@ exports.findAllCoworkings = (req, res) => {
 
 exports.findCoworkingByPk = (req, res) => {
     // Afficher le coworking correspondant à l'id en params, en le récupérant dans la bdd     findByPk()
-    CoworkingModel.findByPk(req.params.id)
+    CoworkingModel.findByPk(req.params.id, {
+        include: ReviewModel
+    })
         .then(coworking => {
             if (coworking === null) {
                 const message = `Le coworking demandé n'existe pas.`
@@ -42,6 +44,42 @@ exports.findCoworkingByPk = (req, res) => {
                 const message = "Un coworking a bien été trouvé."
                 res.json({ message, data: coworking });
             }
+        })
+        .catch(error => {
+            const message = `La liste des coworkings n'a pas pu se charger. Reessayez ulterieurement.`
+            res.status(500).json({ message, data: error })
+        })
+}
+
+exports.findAllCoworkingsByReview = (req, res) => {
+    const minRate = req.query.minRate || 4
+    CoworkingModel.findAll({
+        include: {
+            model: ReviewModel,
+            where: {
+                rating: { [Op.gte]: 4 }
+            }
+        }
+    })
+    .then((elements)=>{
+        const msg = 'La liste des coworkings a bien été récupérée en base de données.'
+        res.json({message: msg, data: elements})
+    })
+    .catch((error) => {
+        const msg = 'Une erreur est survenue.'
+        res.status(500).json({message: msg})
+    })
+}
+
+exports.findAllCoworkingsByReviewSQL = (req, res) => {
+    return sequelize.query('SELECT name, rating FROM `coworkings` LEFT JOIN `reviews` ON `coworkings`.`id` = `reviews`.`coworkingId`',
+        {
+            type: QueryTypes.SELECT
+        }
+    )
+        .then(coworkings => {
+            const message = `Il y a ${coworkings.length} coworkings comme résultat de la requête en SQL pur.`
+            res.json({ message, data: coworkings })
         })
         .catch(error => {
             const message = `La liste des coworkings n'a pas pu se charger. Reessayez ulterieurement.`
