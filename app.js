@@ -2,9 +2,11 @@ const express = require('express')
 const morgan = require('morgan')
 const serveFavicon = require('serve-favicon')
 const sequelize = require('./db/sequelize')
+var cors = require('cors')
 const app = express()
 const port = 3000
 
+app.use(cors()); 
 sequelize.initDb();
 
 app
@@ -13,7 +15,7 @@ app
     .use(express.json())
 
 const coworkingRouter = require('./routes/coworkingRoutes')
-const userRouter = require('./routes/userRoutes')
+const userRouter = require('./routes/userRoute')
 const reviewRouter = require('./routes/reviewRoutes')
 
 app.use('/api/coworkings', coworkingRouter)

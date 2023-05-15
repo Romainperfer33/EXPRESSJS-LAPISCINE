@@ -2,13 +2,14 @@ const bcrypt = require('bcrypt');
 const { Sequelize, DataTypes } = require('sequelize');
 const CoworkingModelSequelize = require('../models/coworking')
 const UserModelSequelize = require('../models/user')
-const ReviewModelSequelize = require('../models/review')
+const ReviewModelSequelize = require('../models/reviewCoworkin')
 const coworkings = require('../mock-coworkings');
 
-const sequelize = new Sequelize('lapiscine_coworking', 'root', '', {
+const sequelize = new Sequelize('lapiscine_coworking', 'root', 'root', {
     host: 'localhost',
-    dialect: 'mariadb',
-    logging: false
+    dialect: 'mysql',
+    logging: false,
+    port: 8889
 });
 
 const CoworkingModel = CoworkingModelSequelize(sequelize, DataTypes)
@@ -20,7 +21,7 @@ UserModel.hasMany(ReviewModel, {
         allowNull: false
     }
   });
-ReviewModel.belongsTo(UserModel); 
+ReviewModel.belongsTo(UserModel);
 
 CoworkingModel.hasMany(ReviewModel, {
     foreignKey: {
@@ -30,7 +31,7 @@ CoworkingModel.hasMany(ReviewModel, {
 ReviewModel.belongsTo(CoworkingModel);
 
 const initDb = () => {
-    return sequelize.sync() 
+    return sequelize.sync({force: true}) 
     .then(() => {
         // création des 11 coworkings dans la bdd, avec une boucle, 
         // message à afficher en console : La liste des {11} coworkings a bien été créée.
@@ -64,7 +65,7 @@ const initDb = () => {
         })
         .catch(err => console.log(err))
     })
-    .catch(error => console.log('Erreur'))
+    .catch(error => console.log(error))
 }
 
 sequelize.authenticate()
